@@ -7,7 +7,6 @@ sudo_cmd       := env("SUDO_CMD", "sudo")
 
 # ── Build ──────────────────────────────────────────────────────────────────
 
-[group('build')]
 # Build the minimal bootc base image
 build:
     {{sudo_cmd}} {{container_runtime}} build \
@@ -17,14 +16,12 @@ build:
         --label "org.opencontainers.image.description=Minimal Ubuntu 26.04 bootc base image" \
         .
 
-[group('build')]
 # Remove the locally built image
 clean:
     {{sudo_cmd}} {{container_runtime}} rmi "{{image_name}}:{{image_tag}}" 2>/dev/null || true
 
 # ── Test ──────────────────────────────────────────────────────────────────
 
-[group('test')]
 # Run image structure tests (no kernel/desktop assumptions)
 test-structure:
     {{sudo_cmd}} {{container_runtime}} run --rm \
