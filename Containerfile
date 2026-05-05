@@ -48,6 +48,7 @@ RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root \
         fdisk \
         iproute2 \
         less \
+        libostree-1-1 \
         linux-firmware \
         openssh-server \
         podman \
