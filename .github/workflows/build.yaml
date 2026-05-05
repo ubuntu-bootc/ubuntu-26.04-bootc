@@ -34,7 +34,7 @@ jobs:
         uses: extractions/setup-just@v3
 
       - name: Build image
-        run: sudo just build
+        run: sudo $(which just) build
 
       - name: Run image structure tests
         run: just test-structure
