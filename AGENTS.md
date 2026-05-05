@@ -6,7 +6,7 @@ AI agent guidance for this repository.
 
 A **minimal bootc base image** for Ubuntu 26.04 LTS "Resolute Raccoon". No
 desktop, no display manager, no flatpak. The companion desktop image lives at
-[hanthor/ubuntu-26.04-desktop-bootc](https://github.com/hanthor/ubuntu-26.04-desktop-bootc)
+[hanthor/ubuntu-26.04-desktop-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-desktop-bootc)
 and is built on top of this one.
 
 ## Repository map
@@ -19,7 +19,7 @@ shared/
   initramfs.sh          Builds dracut initramfs (bootc module, hostonly=no, zstd)
   bootc-rootfs.sh       Sets up bootc/ostree symlink forest; WIPES /var — see below
 .github/workflows/
-  build.yaml            CI: build + push to ghcr.io/hanthor/ubuntu-26.04-bootc
+  build.yaml            CI: build + push to ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc
 ```
 
 ## Build stages
@@ -56,7 +56,7 @@ without first restoring the dpkg database. Use a multi-stage build:
 # Provides pristine dpkg state for restoration
 FROM docker.io/library/ubuntu:26.04 AS dpkg-state
 
-FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest AS system
+FROM ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc:latest AS system
 
 # Restore dpkg/apt so apt-get works again
 RUN --mount=type=bind,from=dpkg-state,source=/var,target=/mnt/var \

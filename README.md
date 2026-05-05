@@ -4,23 +4,23 @@ Minimal Ubuntu 26.04 LTS "Resolute Raccoon" **bootc** base image.
 No desktop, no server assumptions — a slim foundation for derived images.
 
 ```
-ghcr.io/hanthor/ubuntu-26.04-bootc:latest
+ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc:latest
 ```
 
 ## Image hierarchy
 
 ```
 docker.io/library/ubuntu:26.04
-└── ghcr.io/hanthor/ubuntu-26.04-bootc          ← you are here
-    ├── ghcr.io/hanthor/ubuntu-26.04-server-bootc
-    └── ghcr.io/hanthor/ubuntu-26.04-desktop-bootc
+└── ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc          ← you are here
+    ├── ghcr.io/ubuntu-bootc/ubuntu-26.04-server-bootc
+    └── ghcr.io/ubuntu-bootc/ubuntu-26.04-desktop-bootc
 ```
 
 | Image | Description |
 |-------|-------------|
-| **[ubuntu-26.04-bootc](https://github.com/hanthor/ubuntu-26.04-bootc)** | This image — kernel, bootc, dracut, ssh, podman |
-| [ubuntu-26.04-server-bootc](https://github.com/hanthor/ubuntu-26.04-server-bootc) | Server layer — cloud-init, netplan, ufw, snapd, chrony |
-| [ubuntu-26.04-desktop-bootc](https://github.com/hanthor/ubuntu-26.04-desktop-bootc) | Desktop layer — GNOME 50, flatpak, ZFS, plymouth |
+| **[ubuntu-26.04-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-bootc)** | This image — kernel, bootc, dracut, ssh, podman |
+| [ubuntu-26.04-server-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-server-bootc) | Server layer — cloud-init, netplan, ufw, snapd, chrony |
+| [ubuntu-26.04-desktop-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-desktop-bootc) | Desktop layer — GNOME 50, flatpak, ZFS, plymouth |
 
 ## What's included
 
@@ -38,8 +38,8 @@ docker.io/library/ubuntu:26.04
 
 ## What's not included
 
-- Desktop environment → use [ubuntu-26.04-desktop-bootc](https://github.com/hanthor/ubuntu-26.04-desktop-bootc)
-- Server tools (cloud-init, netplan, ufw) → use [ubuntu-26.04-server-bootc](https://github.com/hanthor/ubuntu-26.04-server-bootc)
+- Desktop environment → use [ubuntu-26.04-desktop-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-desktop-bootc)
+- Server tools (cloud-init, netplan, ufw) → use [ubuntu-26.04-server-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-server-bootc)
 - Plymouth, Flatpak, ZFS
 - `gnome-initial-setup`
 
@@ -54,7 +54,7 @@ just build
 ```dockerfile
 # Restore the dpkg database wiped by bootc-rootfs.sh in the base image
 FROM docker.io/library/ubuntu:26.04 AS dpkg-state
-FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest
+FROM ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc:latest
 
 COPY --from=dpkg-state /var/lib/dpkg /var/lib/dpkg
 RUN mkdir -p /var/cache/apt/archives/partial /var/lib/apt/lists/partial /var/log/apt
@@ -74,5 +74,5 @@ RUN bootc container lint
 
 ## Known issues
 
-- [#1](https://github.com/hanthor/ubuntu-26.04-desktop-bootc/issues/2) — composefs verity regression on kernel 7.0 (`f77f281b6118`)
-- [#2](https://github.com/hanthor/ubuntu-26.04-desktop-bootc/issues/3) — `sysroot.mount` / `systemd-gpt-auto-generator` quirk on Ubuntu 26.04
+- [#1](https://github.com/ubuntu-bootc/ubuntu-26.04-desktop-bootc/issues/2) — composefs verity regression on kernel 7.0 (`f77f281b6118`)
+- [#2](https://github.com/ubuntu-bootc/ubuntu-26.04-desktop-bootc/issues/3) — `sysroot.mount` / `systemd-gpt-auto-generator` quirk on Ubuntu 26.04

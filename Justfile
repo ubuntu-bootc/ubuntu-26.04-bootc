@@ -12,7 +12,7 @@ build:
     {{sudo_cmd}} {{container_runtime}} build \
         -f Containerfile \
         -t "{{image_name}}:{{image_tag}}" \
-        --label "org.opencontainers.image.source=https://github.com/hanthor/ubuntu-26.04-bootc" \
+        --label "org.opencontainers.image.source=https://github.com/ubuntu-bootc/ubuntu-26.04-bootc" \
         --label "org.opencontainers.image.description=Minimal Ubuntu 26.04 bootc base image" \
         .
 
