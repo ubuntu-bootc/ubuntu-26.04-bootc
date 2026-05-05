@@ -9,13 +9,13 @@ rm -rf /boot /home /root /usr/local /srv /opt /mnt /var \
 mkdir -p /sysroot /boot /usr/lib/ostree /var
 
 # Set up the required ostree symlinks
-ln -sT sysroot/ostree /ostree
-ln -sT var/roothome   /root
-ln -sT var/srv        /srv
-ln -sT var/opt        /opt
-ln -sT var/mnt        /mnt
-ln -sT var/home       /home
-ln -sT ../var/usrlocal /usr/local
+ln -sfT sysroot/ostree /ostree
+ln -sfT var/roothome   /root
+ln -sfT var/srv        /srv
+ln -sfT var/opt        /opt
+ln -sfT var/mnt        /mnt
+ln -sfT var/home       /home
+ln -sfT ../var/usrlocal /usr/local
 
 # Ensure volatile directories are created at boot via tmpfiles.d
 printf '%s\n' \
