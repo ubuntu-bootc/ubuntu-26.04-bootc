@@ -58,7 +58,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p /tmp/digests
-          skopeo inspect --no-tags \
+          sudo skopeo inspect --no-tags \
             "docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:latest" | \
             python3 -c "import json,sys; print(json.load(sys.stdin)['Digest'])" \
             > /tmp/digests/${{ matrix.platform.arch }}.txt
