@@ -46,3 +46,30 @@ Use `mkdir -p /var/roothome/...` not `/root/...` during the build.
 - `systemd-gpt-auto-generator` generates a broken `sysroot.mount` on Ubuntu
   26.04 when no `root=UUID=` is in the BLS entry — the CI smoke test patches
   the BLS entry post-install as a workaround.
+
+## Pattern for derived images
+
+Because `bootc-rootfs.sh` wipes `/var`, derived images **cannot run `apt-get`**
+without first restoring the dpkg database. Use a multi-stage build:
+
+```dockerfile
+# Provides pristine dpkg state for restoration
+FROM docker.io/library/ubuntu:26.04 AS dpkg-state
+
+FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest AS system
+
+# Restore dpkg/apt so apt-get works again
+RUN --mount=type=bind,from=dpkg-state,source=/var,target=/mnt/var \
+    cp -a /mnt/var/lib/dpkg /var/lib/ && \
+    mkdir -p /var/cache/apt/archives/partial \
+             /var/lib/apt/lists/partial \
+             /var/log/apt
+
+RUN apt-get update && apt-get install -y my-package && apt-get clean
+
+# Re-run at the end to wipe /var again before committing
+COPY shared/bootc-rootfs.sh /tmp/
+RUN /tmp/bootc-rootfs.sh && rm /tmp/bootc-rootfs.sh
+
+RUN bootc container lint
+```
