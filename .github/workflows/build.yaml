@@ -50,16 +50,18 @@ jobs:
       - name: Push to GHCR
         if: github.event_name != 'pull_request'
         run: |
+          # Push to arch-specific tag so :latest always stays a multi-arch manifest.
+          # The manifest job below promotes the arch images into :latest.
           sudo podman push \
             "${IMAGE_NAME}:latest" \
-            "${IMAGE_REGISTRY}/${IMAGE_NAME}:latest"
+            "${IMAGE_REGISTRY}/${IMAGE_NAME}:latest-${{ matrix.platform.arch }}"
 
       - name: Save digest artifact
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p /tmp/digests
           sudo skopeo inspect --no-tags \
-            "docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:latest" | \
+            "docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:latest-${{ matrix.platform.arch }}" | \
             python3 -c "import json,sys; print(json.load(sys.stdin)['Digest'])" \
             > /tmp/digests/${{ matrix.platform.arch }}.txt
 
