@@ -58,9 +58,9 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p /tmp/digests
-          sudo podman inspect --format '{{index .RepoDigests 0}}' \
-            "${IMAGE_REGISTRY}/${IMAGE_NAME}:latest" | \
-            grep -o 'sha256:[a-f0-9]*' \
+          skopeo inspect --no-tags \
+            "docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:latest" | \
+            python3 -c "import json,sys; print(json.load(sys.stdin)['Digest'])" \
             > /tmp/digests/${{ matrix.platform.arch }}.txt
 
       - name: Upload digest artifact
