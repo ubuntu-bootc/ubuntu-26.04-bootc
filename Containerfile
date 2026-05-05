@@ -35,9 +35,8 @@ COPY --from=builder /output /
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Core system: kernel, systemd-boot, dracut, and essential userspace.
-# No desktop, no display manager, no flatpak — derived images add those.
-RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root --mount=type=tmpfs,dst=/boot \
+# Core system utilities (no kernel yet — install it after hooks are stubbed).
+RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root \
     apt-get update -y && \
     apt-get install -y \
         btrfs-progs \
@@ -50,7 +49,6 @@ RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root --mount=type=tmpfs,
         iproute2 \
         less \
         linux-firmware \
-        linux-generic \
         openssh-server \
         podman \
         rsync \
@@ -64,7 +62,7 @@ RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root --mount=type=tmpfs,
         xfsprogs && \
     apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Stub out kernel/grub/kdump post-install hooks that fail in a container.
+# Stub out kernel/grub/kdump post-install hooks BEFORE installing the kernel.
 # We generate the initramfs ourselves with dracut in a later step.
 RUN printf '#!/bin/sh\nexit 0\n' | tee \
         /usr/sbin/update-initramfs \
@@ -80,10 +78,14 @@ RUN printf '#!/bin/sh\nexit 0\n' | tee \
     printf '#!/bin/sh\nexit 0\n' > /etc/kernel/postinst.d/kdump-tools && \
     chmod +x /etc/kernel/postinst.d/kdump-tools
 
-# Copy the kernel vmlinuz into the modules tree where dracut and bootc expect it.
-RUN KVER=$(find /usr/lib/modules -maxdepth 1 -mindepth 1 -type d | sort -V | tail -1 | xargs basename) && \
+# Install the kernel (hooks are now stubbed so post-install scripts are no-ops).
+RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/root --mount=type=tmpfs,dst=/boot \
+    apt-get update -y && \
+    apt-get install -y linux-generic && \
+    KVER=$(find /usr/lib/modules -maxdepth 1 -mindepth 1 -type d | sort -V | tail -1 | xargs basename) && \
     cp "/boot/vmlinuz-${KVER}" "/usr/lib/modules/${KVER}/vmlinuz" && \
-    rm -rf /boot/*
+    rm -rf /boot/* && \
+    apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 RUN systemctl enable --root / ssh.service
 
