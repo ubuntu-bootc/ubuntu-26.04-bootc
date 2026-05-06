@@ -38,13 +38,12 @@ system   Kernel, systemd-boot, dracut, openssh, podman, skopeo, sssd, sudo;
 bootc symlink forest. Any file written to `/var/...` before this step is lost.
 Use `mkdir -p /var/roothome/...` not `/root/...` during the build.
 
-## Known issues & fixes
+## Known issues
 
 - **fs-verity regression** (Ubuntu 26.04 kernel 7.0, commit f77f281b6118):
   - **Status**: Upstream patch accepted (Colin Walters fix, reviewed by Eric Biggers)
   - **Workaround**: `prepare-root.conf` uses `enabled = yes` (composefs fallback works)
   - **Timeline**: Ubuntu kernel backport expected within 1-2 weeks
-  - **Details**: See `HOTFIX-VERITY.md` for analysis & hotfix options
   - **Issue**: https://github.com/bootc-dev/bootc/issues/2174
 
 - **sysroot.mount quirk** (Ubuntu 26.04, systemd 259.5-0ubuntu3):
