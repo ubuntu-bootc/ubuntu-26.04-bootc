@@ -38,14 +38,18 @@ system   Kernel, systemd-boot, dracut, openssh, podman, skopeo, sssd, sudo;
 bootc symlink forest. Any file written to `/var/...` before this step is lost.
 Use `mkdir -p /var/roothome/...` not `/root/...` during the build.
 
-## Known issues
+## Known issues & fixes
 
-- Ubuntu 26.04 kernel 7.0 / fs-verity regression breaks composefs-native
-  deployment — `prepare-root.conf` uses `enabled = maybe` as a workaround
-  until the kernel is patched upstream.
-- `systemd-gpt-auto-generator` generates a broken `sysroot.mount` on Ubuntu
-  26.04 when no `root=UUID=` is in the BLS entry — the CI smoke test patches
-  the BLS entry post-install as a workaround.
+- **fs-verity regression** (Ubuntu 26.04 kernel 7.0, commit f77f281b6118):
+  - **Status**: Upstream patch accepted (Colin Walters fix, reviewed by Eric Biggers)
+  - **Workaround**: `prepare-root.conf` uses `enabled = yes` (composefs fallback works)
+  - **Timeline**: Ubuntu kernel backport expected within 1-2 weeks
+  - **Details**: See `HOTFIX-VERITY.md` for analysis & hotfix options
+  - **Issue**: https://github.com/bootc-dev/bootc/issues/2174
+
+- **sysroot.mount quirk** (Ubuntu 26.04, systemd 259.5-0ubuntu3):
+  - **Status**: CI smoke test patches BLS with explicit `root=UUID=` as workaround
+  - **Note**: Already handled in test-boot workflow
 
 ## Pattern for derived images
 
